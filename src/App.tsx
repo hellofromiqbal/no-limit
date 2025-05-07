@@ -5,7 +5,7 @@ import type { RootState, AppDispatch } from './store/store';
 import LinePopulationChart from './components/LineChart';
 import PiePopulationChart from './components/PieChart';
 import YearRangeSelector from './components/YearRangeSelector';
-import { Container, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import ChartSelector from './components/ChartSelector';
 
 function App() {
@@ -32,15 +32,15 @@ function App() {
       sx={{
         height: '100vh',
         width: '100%',
-        bgcolor: 'lightblue',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // paddingY: 4,
+        paddingY: 4,
+        gap: 4,
       }}
     >
-      <Typography variant="h4" textAlign="center">
-        US Population Dashboard
+      <Typography variant="h4" fontWeight={700} textAlign="center">
+        The USA Population in Charts
       </Typography>
 
       {loading ? (
@@ -52,10 +52,16 @@ function App() {
           ) : (
             <PiePopulationChart data={filteredData} />
           )}
-          <>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+            }}
+          >
             <ChartSelector value={chartType} onChange={(newType) => setChartType(newType)} />
             <YearRangeSelector years={years} value={yearRange} onChange={setYearRange} />
-          </>
+          </Box>
         </>
       )}
     </Container>
