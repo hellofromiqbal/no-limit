@@ -1,23 +1,36 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchPopulation } from './store/populationSlice';
-import type { RootState, AppDispatch } from './store/store';
 import LinePopulationChart from './components/LineChart';
 import PiePopulationChart from './components/PieChart';
 import YearRangeSelector from './components/YearRangeSelector';
 import { Box, Container, Typography } from '@mui/material';
 import ChartSelector from './components/ChartSelector';
+import api from './utils/api';
+import type { PopulationData } from './types/types';
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { data, loading } = useSelector((state: RootState) => state.population);
+  const [data, setData] = useState<PopulationData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [yearRange, setYearRange] = useState<number[]>([2013, 2021]);
   const [chartType, setChartType] = useState<'line' | 'pie'>('line');
 
   useEffect(() => {
-    dispatch(fetchPopulation());
-  }, [dispatch]);
+    const fetchPopulationData = async () => {
+      try {
+        const res = await api.get('/data?drilldowns=Nation&measures=Population');
+        const transformed = res.data.data.map((item: any) => ({
+          Year: item.Year,
+          Population: item.Population,
+        }));
+        setData(transformed);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPopulationData();
+  }, []);
 
   const filteredData = data.filter(d => {
     const year = Number(d.Year);
@@ -59,13 +72,13 @@ function App() {
               gap: 4,
             }}
           >
-            <ChartSelector value={chartType} onChange={(newType) => setChartType(newType)} />
+            <ChartSelector value={chartType} onChange={setChartType} />
             <YearRangeSelector years={years} value={yearRange} onChange={setYearRange} />
           </Box>
         </>
       )}
     </Container>
   );
-};
+}
 
 export default App;
