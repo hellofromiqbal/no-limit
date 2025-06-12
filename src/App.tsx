@@ -18,7 +18,7 @@ function App() {
     const fetchPopulationData = async () => {
       try {
         const res = await api.get('/data?drilldowns=Nation&measures=Population');
-        const transformed = res.data.data.map((item: any) => ({
+        const transformed = res.data.data.map((item: PopulationData) => ({
           Year: item.Year,
           Population: item.Population,
         }));
